@@ -104,7 +104,8 @@ export default function Home() {
       }
 
       try {
-        const response = await fetch("http://localhost:8000/predict", {
+        const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+        const response = await fetch(`${backendUrl}/predict`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(parsedData),
