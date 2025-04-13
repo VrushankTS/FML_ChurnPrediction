@@ -4,6 +4,8 @@ This repository contains implementation of the above research paper, which provi
 
 **Dataset**: https://www.kaggle.com/datasets/jpacse/datasets-for-churn-telecom
 
+## Dataset Preprocessing
+
 ### 1. Dataset Loading and Initial Inspection
 
 - Loaded the original `cell2celltrain.csv` file
@@ -27,6 +29,26 @@ This repository contains implementation of the above research paper, which provi
 - Dropped columns: Churn, CustomerID, ServiceArea
 - Total of 20 attributes selected for churn prediction.
 - Features: MadeCallToRetentionTeam, CreditRating, HandsetPrice, RetentionCalls, CurrentEquipmentDays, HandsetRefurbished, RetentionOffersAccepted, HandsetWebCapable, RespondsToMailOffers, BuysViaMailOrder, MonthlyMinutes, HandsetModels, OffPeakCallsInOut, AgeHH1, ReceivedCalls, Homeownership, Handsets, 	PeakCallsInOut, TotalRecurringCharge, AgeHH2
+
+## Models evaluated
+Six classification models were trained and evaluated:
+- Logistic Regression
+- Decision Tree
+- Random Forest
+- Naive Bayes
+- AdaBoost
+- XGBoost
+
+### Results
+
+| Model | Accuracy | Precision | Recall | F1 | AUC |
+|-------|----------|-----------|--------|----|-----|
+| Logistic Regression | 0.7134 | 0.4189 | 0.0214 | 0.0407 | 0.5920 |
+| Decision Tree | 0.7148 | 0.4909 | 0.0930 | 0.1564 | 0.6159 |
+| Random Forest | 0.7207 | 0.4831 | 0.1475 | 0.2260 | 0.6431 |
+| Naive Bayes | 0.6881 | 0.4831 | 0.1475 | 0.2260 | 0.5696 |
+| Random Forest | 0.7187 | 0.6172 | 0.0272 | 0.0521 | 0.6249 |
+| Naive Bayes | 0.7206 | 0.5702 | 0.0686 | 0.1224 | 0.6449 |
 
 ## Cluster-Level Churn Driver Analysis
 The heatmap below visualizes the top 10 features influencing churn, highlighting how each customer cluster differs in behavior and how those behaviors impact churn likelihood. The color represents the normalized average value of each feature within a cluster, while the annotation shows the corresponding Bayesian effect on churn odds (% change).
