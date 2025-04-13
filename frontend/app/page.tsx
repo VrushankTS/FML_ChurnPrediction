@@ -12,7 +12,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Progress } from "@/components/ui/progress";
+//import { Progress } from "@/components/ui/progress";
 import {
   ScatterChart,
   Scatter,
@@ -200,7 +200,12 @@ export default function Home() {
                 <span>Processing data...</span>
                 <span>{Math.round(progress)}%</span>
               </div>
-              <Progress value={progress} />
+              <div className="w-full h-3 bg-muted rounded">
+                  <div
+                    className="h-full bg-primary rounded transition-all duration-300"
+                    style={{ width: `${progress}%` }}
+                  ></div>
+                </div>
             </div>
           </Card>
         )}
