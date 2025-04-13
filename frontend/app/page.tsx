@@ -25,7 +25,7 @@ import {
 } from "recharts";
 
 interface ChurnData {
-  [key: string]: string | number;
+  [key: string]: string | number | undefined;
   CustomerID: string;
   churnPrediction?: "Yes" | "No";
   clusterLabel?: number;
@@ -38,7 +38,7 @@ interface ChurnData {
  * assigns x and y positions. The x and y values are based on the cluster so that
  * points in the same cluster appear close together.
  */
-const getMockPrediction = () => {
+const getMockPrediction = (): { churnPrediction: "Yes" | "No"; clusterLabel: number; x: number; y: number } => {
   const clusterLabel = Math.floor(Math.random() * 3) + 1; // 1, 2, or 3
   const churnPrediction = Math.random() > 0.7 ? "Yes" : "No";
 
