@@ -18,7 +18,7 @@ This repository contains implementation of the above research paper, which provi
 - Filled 35 categorical missing values with mode (most frequent value)
 - Filled 23 numerical missing values with mean
 
-##### Categorical Variable Encoding:
+##### Categorical Variable Encoding
 - Applied label encoding to categorical variables
 
 ##### Numerical Variable Processing
