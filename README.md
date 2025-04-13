@@ -1,6 +1,32 @@
-# FML_ChurnPrediction
+# Integrated Churn Prediction and Customer Segmentation Framework for Telco Business
 
 This repository contains implementation of the above research paper, which provides framework that integrates churn prediction and customer segmentation process to provide telco operators with a complete churn analysis to better manage customer churn.
+
+**Dataset**: https://www.kaggle.com/datasets/jpacse/datasets-for-churn-telecom
+
+### 1. Dataset Loading and Initial Inspection
+
+- Loaded the original `cell2celltrain.csv` file
+- The original dataset has 58 columns.
+- Target Variable: Churn (Binary: Yes/No)
+
+### 2. Data Cleaning and Transformation
+
+#### Handling Missing Values
+- Filled 35 categorical missing values with mode (most frequent value)
+- Filled 23 numerical missing values with mean
+
+#### Categorical Variable Encoding:
+- Applied label encoding to categorical variables
+
+#### Numerical Variable Processing
+- Applied Min-Max scaling to normalize numerical features
+
+## Chi-square Score method
+- Reduces the dimensionality of the dataset.
+- Dropped columns: Churn, CustomerID, ServiceArea
+- Total of 20 attributes selected for churn prediction.
+- Features: MadeCallToRetentionTeam, CreditRating, HandsetPrice, RetentionCalls, CurrentEquipmentDays, HandsetRefurbished, RetentionOffersAccepted, HandsetWebCapable, RespondsToMailOffers, BuysViaMailOrder, MonthlyMinutes, HandsetModels, OffPeakCallsInOut, AgeHH1, ReceivedCalls, Homeownership, Handsets, 	PeakCallsInOut, TotalRecurringCharge, AgeHH2
 
 ## Cluster-Level Churn Driver Analysis
 The heatmap below visualizes the top 10 features influencing churn, highlighting how each customer cluster differs in behavior and how those behaviors impact churn likelihood. The color represents the normalized average value of each feature within a cluster, while the annotation shows the corresponding Bayesian effect on churn odds (% change).
