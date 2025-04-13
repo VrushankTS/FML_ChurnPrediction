@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Upload, Table, LineChart } from "lucide-react";
+import { Upload, LineChart } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import {
@@ -12,7 +12,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-//import { Progress } from "@/components/ui/progress";
 import {
   ScatterChart,
   Scatter,
@@ -33,40 +32,20 @@ interface ChurnData {
   y?: number;
 }
 
-/**
- * getMockPrediction randomly sets a cluster for each customer, then randomly
- * assigns x and y positions. The x and y values are based on the cluster so that
- * points in the same cluster appear close together.
- */
-const getMockPrediction = (): { churnPrediction: "Yes" | "No"; clusterLabel: number; x: number; y: number } => {
-  const clusterLabel = Math.floor(Math.random() * 3) + 1; // 1, 2, or 3
-  const churnPrediction = Math.random() > 0.7 ? "Yes" : "No";
 
-  // Each cluster gets a different base coordinate.
-  // Points within the same cluster will have coordinates near this base.
-  const baseCoordinates = {
-    1: { x: 50, y: 50 },
-    2: { x: 200, y: 200 },
-    3: { x: 350, y: 350 },
-  };
-  const base = baseCoordinates[clusterLabel as 1 | 2 | 3];
-
-  return {
-    churnPrediction,
-    clusterLabel,
-    x: base.x + Math.random() * 30, // a little random variation
-    y: base.y + Math.random() * 30, // a little random variation
-  };
-};
-
-// Tooltip shown when you hover on a point
 const CustomTooltip = ({ active, payload }: any) => {
   if (active && payload && payload.length) {
     const data = payload[0].payload;
     return (
       <div className="bg-white p-3 rounded-lg shadow-lg border">
         <p className="font-medium">Customer ID: {data.CustomerID}</p>
-        <p className={data.churnPrediction === "Yes" ? "text-destructive" : "text-primary"}>
+        <p
+          className={
+            data.churnPrediction === "Yes"
+              ? "text-destructive"
+              : "text-primary"
+          }
+        >
           Churn: {data.churnPrediction}
         </p>
         <p>Cluster {data.clusterLabel}</p>
@@ -76,18 +55,20 @@ const CustomTooltip = ({ active, payload }: any) => {
   return null;
 };
 
-/**
- * Custom shape function for drawing the scatter points.
- * If a point is predicted to churn, we make it a larger yellow circle with a red border.
- * Otherwise, we draw a small circle.
- */
+
 const renderCustomizedShape = (props: any) => {
   const { cx, cy, payload, fill } = props;
-  if (payload.churnPrediction === "Yes") {
-    // Show churn points with a "shine" effect.
-    return <circle cx={cx} cy={cy} r={10} fill="yellow" stroke="red" strokeWidth={2} />;
-  }
-  return <circle cx={cx} cy={cy} r={5} fill={fill} />;
+  const isChurn = payload.churnPrediction === "Yes";
+  return (
+    <circle
+      cx={cx}
+      cy={cy}
+      r={5}
+      fill={fill} 
+      stroke={isChurn ? "red" : "none"} 
+      strokeWidth={isChurn ? 2 : 0} 
+    />
+  );
 };
 
 export default function Home() {
@@ -95,7 +76,9 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const [progress, setProgress] = useState(0);
 
-  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileUpload = async (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
     const file = event.target.files?.[0];
     if (!file) return;
 
@@ -110,35 +93,51 @@ export default function Home() {
 
       const parsedData: ChurnData[] = [];
 
-      // Skip header row and parse CSV rows
       for (let i = 1; i < rows.length; i++) {
         if (rows[i].trim() === "") continue;
         const values = rows[i].split(",");
-        const row: ChurnData = { CustomerID: "" };
-
+        const row: any = {}; 
         headers.forEach((header, index) => {
           row[header.trim()] = values[index]?.trim() || "";
         });
         parsedData.push(row);
       }
 
-      // Process each row by randomly assigning cluster and (x,y) data
-      const processedData = [];
-      for (let i = 0; i < parsedData.length; i++) {
-        // Simulate delay like an API call
-        await new Promise(resolve => setTimeout(resolve, 100));
-        const mockResult = getMockPrediction();
-        processedData.push({
-          ...parsedData[i],
-          churnPrediction: mockResult.churnPrediction,
-          clusterLabel: mockResult.clusterLabel,
-          x: mockResult.x,
-          y: mockResult.y,
+      try {
+        const response = await fetch("http://localhost:8000/predict", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(parsedData),
         });
-        setProgress(((i + 1) / parsedData.length) * 100);
+
+        const result = await response.json();
+        const predictions = result.predictions;
+
+        const baseCoordinates = {
+          1: { x: 50, y: 50 },
+          2: { x: 200, y: 200 },
+          3: { x: 350, y: 350 },
+        };
+
+        const processedData = parsedData.map((row, i) => {
+          const prediction = predictions[i];
+          const base = baseCoordinates[prediction.ClusterGroup as 1 | 2 | 3];
+          return {
+            CustomerID: row.CustomerID,
+            churnPrediction:
+              prediction.PredictedChurn === 1 ? "Yes" as const : "No" as const,
+            clusterLabel: prediction.ClusterGroup,
+            x: base.x + Math.random() * 30,
+            y: base.y + Math.random() * 30,
+          };
+        });
+
+        setData(processedData);
+      } catch (error) {
+        console.error("Error fetching predictions:", error);
+      } finally {
+        setLoading(false);
       }
-      setData(processedData);
-      setLoading(false);
     };
 
     reader.readAsText(file);
@@ -146,21 +145,22 @@ export default function Home() {
 
   const getChurnStats = () => {
     const total = data.length;
-    const churnCount = data.filter(row => row.churnPrediction === "Yes").length;
+    const churnCount = data.filter(
+      (row) => row.churnPrediction === "Yes"
+    ).length;
     return {
       total,
       churnCount,
-      churnRate: total > 0 ? ((churnCount / total) * 100).toFixed(1) : "0"
+      churnRate: total > 0 ? ((churnCount / total) * 100).toFixed(1) : "0",
     };
   };
 
   const stats = getChurnStats();
 
-  // Group data by cluster so that points of the same cluster are shown together.
   const getClusterData = () => {
     const clusters: { [key: string]: ChurnData[] } = {};
-    data.forEach(item => {
-      const key = `cluster-${item.clusterLabel}-${item.churnPrediction}`;
+    data.forEach((item) => {
+      const key = `cluster-${item.clusterLabel}`;
       if (!clusters[key]) clusters[key] = [];
       clusters[key].push(item);
     });
@@ -172,10 +172,12 @@ export default function Home() {
       <div className="max-w-7xl mx-auto space-y-8">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-4xl font-bold text-foreground">Telecom Customer Churn Analysis</h1>
+            <h1 className="text-4xl font-bold text-foreground">
+              Telecom Customer Churn Analysis
+            </h1>
             <p className="text-muted-foreground mt-2">
-              Upload customer data to predict churn probability and view cluster analysis.
-              <br />
+              Upload customer data to predict churn probability and view cluster
+              analysis.
             </p>
           </div>
           <Button className="flex items-center gap-2">
@@ -201,11 +203,11 @@ export default function Home() {
                 <span>{Math.round(progress)}%</span>
               </div>
               <div className="w-full h-3 bg-muted rounded">
-                  <div
-                    className="h-full bg-primary rounded transition-all duration-300"
-                    style={{ width: `${progress}%` }}
-                  ></div>
-                </div>
+                <div
+                  className="h-full bg-primary rounded transition-all duration-300"
+                  style={{ width: `${progress}%` }}
+                ></div>
+              </div>
             </div>
           </Card>
         )}
@@ -226,7 +228,9 @@ export default function Home() {
                 <div className="flex items-center gap-4">
                   <LineChart className="w-8 h-8 text-destructive" />
                   <div>
-                    <p className="text-sm text-muted-foreground">Predicted Churns</p>
+                    <p className="text-sm text-muted-foreground">
+                      Predicted Churns
+                    </p>
                     <p className="text-2xl font-bold">{stats.churnCount}</p>
                   </div>
                 </div>
@@ -243,22 +247,25 @@ export default function Home() {
             </div>
 
             <Card className="p-6">
-              <h2 className="text-xl font-semibold mb-4">Customer Cluster Analysis</h2>
+              <h2 className="text-xl font-semibold mb-4">
+                Customer Cluster Analysis
+              </h2>
               <div className="h-[400px]">
                 <ResponsiveContainer width="100%" height="100%">
-                  <ScatterChart margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
+                  <ScatterChart
+                    margin={{ top: 20, right: 20, bottom: 20, left: 20 }}
+                  >
                     <CartesianGrid />
                     <XAxis type="number" dataKey="x" name="X" />
                     <YAxis type="number" dataKey="y" name="Y" />
                     <Tooltip content={<CustomTooltip />} />
                     <Legend />
                     {Object.entries(getClusterData()).map(([key, clusterData]) => {
-                      // Break the key to get the cluster number
                       const [_, clusterNumber] = key.split("-");
                       const clusterColors: { [key: string]: string } = {
-                        "1": "#3b82f6", // blue
-                        "2": "#10b981", // green
-                        "3": "#f59e0b", // amber
+                        "1": "#3b82f6", // blue for Cluster 1
+                        "2": "#10b981", // green for Cluster 2
+                        "3": "#f59e0b", // amber for Cluster 3
                       };
                       const fillColor = clusterColors[clusterNumber] || "#888";
                       return (
@@ -281,34 +288,29 @@ export default function Home() {
                 <UITable>
                   <TableHeader>
                     <TableRow>
-                      {Object.keys(data[0])
-                        .filter((header) => header !== "x" && header !== "y")
-                        .map((header) => (
-                          <TableHead key={header} className="whitespace-nowrap">
-                            {header}
-                          </TableHead>
-                      ))}
+                      <TableHead className="whitespace-nowrap">CustomerID</TableHead>
+                      <TableHead className="whitespace-nowrap">Churn Prediction</TableHead>
+                      <TableHead className="whitespace-nowrap">Cluster Label</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {data.map((row, index) => (
                       <TableRow key={index}>
-                        {Object.entries(row)
-                          .filter(([key]) => key !== "x" && key !== "y")
-                          .map(([key, value]) => (
-                            <TableCell
-                              key={key}
-                              className={`whitespace-nowrap ${
-                                key === "churnPrediction"
-                                  ? value === "Yes"
-                                    ? "text-destructive font-medium"
-                                    : "text-primary font-medium"
-                                  : ""
-                              }`}
-                            >
-                              {value}
-                            </TableCell>
-                        ))}
+                        <TableCell className="whitespace-nowrap">
+                          {row.CustomerID}
+                        </TableCell>
+                        <TableCell
+                          className={`whitespace-nowrap ${
+                            row.churnPrediction === "Yes"
+                              ? "text-destructive font-medium"
+                              : "text-primary font-medium"
+                          }`}
+                        >
+                          {row.churnPrediction}
+                        </TableCell>
+                        <TableCell className="whitespace-nowrap">
+                          {row.clusterLabel}
+                        </TableCell>
                       </TableRow>
                     ))}
                   </TableBody>
