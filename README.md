@@ -146,7 +146,7 @@ This starts the frontend at [http://localhost:3000](http://localhost:3000).
 
 ```bash
 cd backend
-python main.py
+python api/main.py
 ```
 
 This starts the FastAPI backend at [http://localhost:8000](http://localhost:8000).
