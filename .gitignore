@@ -3,3 +3,4 @@ env
 .env.local
 .env.dev
 .bolt
+__pycache__
