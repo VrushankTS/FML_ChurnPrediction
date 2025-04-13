@@ -117,3 +117,36 @@ The heatmap below visualizes the top 10 features influencing churn, highlighting
 - Columns: Clusters generated using KMeans on churned customers.
 - Cell Color: Normalized feature mean (red = high, blue = low).
 - Annotations: Feature's average z-score in the cluster + its % effect on churn (positive = increases churn, negative = decreases churn).
+
+
+# Running the Application
+
+### 1. Configure Environment Variables
+
+Create a file named `.env.local` inside the `frontend/` directory with the following content:
+
+```env
+NEXT_PUBLIC_BACKEND_URL=http://localhost:8000
+```
+
+Adjust the URL if your FastAPI backend is running on a different address.
+
+### 2. Start the Frontend
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+This starts the frontend at [http://localhost:3000](http://localhost:3000).
+
+
+### 3. Start the Backend
+
+```bash
+cd backend
+python main.py
+```
+
+This starts the FastAPI backend at [http://localhost:8000](http://localhost:8000).
