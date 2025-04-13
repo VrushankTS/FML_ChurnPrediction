@@ -18,6 +18,8 @@ The heatmap below visualizes the top 10 features influencing churn, highlighting
   - This group shows high retention engagement — more calls to and from the retention team, and more offers accepted — features associated with lower churn probability.
   - They also tend to have newer equipment and fewer handsets, both contributing to churn reduction.
 
+![image](https://github.com/user-attachments/assets/7c88f6f2-5ebf-4ccd-b4bc-37c4c27d0cfd)
+
 ### 📘 How to Read the Heatmap
 - Rows: Top churn-driving features selected from a Bayesian logistic regression model.
 - Columns: Clusters generated using KMeans on churned customers.
