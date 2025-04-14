@@ -146,6 +146,9 @@ This starts the frontend at [http://localhost:3000](http://localhost:3000).
 
 ```bash
 cd backend
+python -m venv env
+source env/bin/activate
+pip install -r requirements.txt
 python api/main.py
 ```
 
