@@ -41,6 +41,11 @@ Six classification models were trained and evaluated:
 - AdaBoost
 - XGBoost
 
+In churn prediction, the primary metrics should be
+- Recall on the churn class (catch as many churners as possible)
+- F1-score (balance between precision and recall)
+- AUC-PR (Precision-Recall AUC)
+
 ### Results
 
 #### Imbalanced dataset
