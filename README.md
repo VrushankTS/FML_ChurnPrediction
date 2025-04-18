@@ -52,28 +52,30 @@ In churn prediction, the primary metrics should be
 
 | Model | Accuracy | Precision | Recall | F1 | AUC |
 |-------|----------|-----------|--------|----|-----|
-| Logistic Regression | 0.7134 | 0.4189 | 0.0214 | 0.0407 | 0.5920 |
-| Decision Tree | 0.7148 | 0.4909 | 0.0930 | 0.1564 | 0.6159 |
-| Random Forest | **0.7207** | 0.4831 | **0.1475** | **0.2260** | 0.6431 |
-| Naive Bayes | 0.6881 | 0.4831 | **0.1475** | **0.2260** | 0.5696 |
-| AdaBoost | 0.7187 | **0.6172** | 0.0272 | 0.0521 | 0.6249 |
-| XGBoost | 0.7206 | 0.5702 | 0.0686 | 0.1224 | **0.6449** |
+| Logistic Regression | 0.5072 | 0.3297 | 0.7099 | 0.4502 | 0.5928 |
+| Decision Tree | 0.4936 | **0.3329** | 0.7784 | 0.4664 | 0.6219 |
+| Random Forest | 0.5855 | 0.3312 | 0.8529 | **0.4772** | 0.6418 |
+| Naive Bayes | 0.6881 | 0.3312 | 0.8529 | **0.4772** | 0.5696 |
+| AdaBoost | **0.7201** | 0.3324 | 0.8301 | 0.4747 | 0.6408 |
+| XGBoost | 0.3581 | 0.3020 | **0.9593** | 0.4593 | **0.6477** |
+| Stacking Ensemble | 0.4754 | 0.3327 | 0.8408 | 0.4767 | 0.6472 |
 
-![image](https://github.com/user-attachments/assets/86e259c4-53b5-490a-af63-794645cdf573)
-
+![image](https://github.com/user-attachments/assets/6674bf0d-d1ab-41f0-96e4-d68f8c4f1f4c)
 
 #### SMOTEd dataset
 
 | Model | Accuracy | Precision | Recall | F1 | AUC |
 |-------|----------|-----------|--------|----|-----|
-| Logistic Regression | 0.5703 | 0.5813 | 0.5244 | 0.5514 | 0.5979 |
-| Decision Tree | 0.6771 | 0.7227 | 0.5822 | 0.6449 | 0.7451 |
-| Random Forest | 0.6826 | 0.6747 | **0.7140** | 0.6938 | 0.7565 |
-| Naive Bayes | 0.5646 | 0.5785 | 0.4983 | 0.5354 | 0.5847 |
-| Random Forest | 0.6400 | 0.6382 | 0.6580 | 0.6460 | 0.6940 |
-| Naive Bayes | **0.7221** | **0.7542** | 0.6646 | **0.7066** | **0.7991** |
+| Logistic Regression | 0.5120 | 0.5079 | **0.9872** | 0.6708 | 0.5978 |
+| Decision Tree | 0.6384 | 0.6020 | 0.8321 | 0.6986 | 0.7449 |
+| Random Forest | 0.5035 | 0.5957 | 0.8814 | 0.7109 | 0.7588 |
+| Naive Bayes | 0.5646 | 0.5957 | 0.8814 | 0.7109 | 0.5847 |
+| Random Forest | 0.6400 | 0.6382 | 0.6580 | 0.6480 | 0.6940 |
+| Naive Bayes | **0.7221** | **0.7542** | 0.6646 | 0.7066 | **0.7991** |
+| Stacking Ensemble | 0.6975 | 0.6731 | 0.7761 | **0.7209** | 0.7912 |
 
-![image](https://github.com/user-attachments/assets/50a027c7-06cc-4ded-9ed1-607456c613df)
+![image](https://github.com/user-attachments/assets/b8a939fe-0e51-4d5c-93df-8c65fac29337)
+
 
 ### Key Findings
 - **Imbalanced dataset:** Ensemble models (XGBoost, Random Forest, and AdaBoost) performed best in terms of AUC and precision, while Naïve Bayes and Decision Tree showed better recall, indicating different trade-offs in churn prediction.
@@ -102,7 +104,7 @@ In churn prediction, the primary metrics should be
 ### Cluster-Level Churn Driver Analysis
 The heatmap below visualizes the top 10 features influencing churn, highlighting how each customer cluster differs in behavior and how those behaviors impact churn likelihood. The color represents the normalized average value of each feature within a cluster, while the annotation shows the corresponding Bayesian effect on churn odds (% change).
 
-#### 📊 Key Interpretations
+#### Key Interpretations
 - Cluster 0 appears to have the highest churn risk:
   - Customers tend to have older equipment (+292% effect on churn), more handsets, and more handset models — all strong churn drivers.
   - They also accept fewer retention offers and receive fewer calls, further increasing churn likelihood.
@@ -123,6 +125,11 @@ The heatmap below visualizes the top 10 features influencing churn, highlighting
 - Cell Color: Normalized feature mean (red = high, blue = low).
 - Annotations: Feature's average z-score in the cluster + its % effect on churn (positive = increases churn, negative = decreases churn).
 
+### Cluster-wise churn rate
+The logistic regression model was trained and used to predict churn probabilities for the subset of customers who had already churned. The predicted churn probabilities were subsequently averaged across predefined customer segments.
+- Cluster 1: 30.92%
+- Cluster 2: 46.90%
+- Cluster 3: 25.49%
 
 # Running the Application
 
