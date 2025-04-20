@@ -70,8 +70,8 @@ In churn prediction, the primary metrics should be
 | Decision Tree | 0.6384 | 0.6020 | 0.8321 | 0.6986 | 0.7449 |
 | Random Forest | 0.5035 | 0.5957 | 0.8814 | 0.7109 | 0.7588 |
 | Naive Bayes | 0.5646 | 0.5957 | 0.8814 | 0.7109 | 0.5847 |
-| Random Forest | 0.6400 | 0.6382 | 0.6580 | 0.6480 | 0.6940 |
-| Naive Bayes | **0.7221** | **0.7542** | 0.6646 | 0.7066 | **0.7991** |
+| Adaboost | 0.6400 | 0.6382 | 0.6580 | 0.6480 | 0.6940 |
+| XGBoost | **0.7221** | **0.7542** | 0.6646 | 0.7066 | **0.7991** |
 | Stacking Ensemble | 0.6975 | 0.6731 | 0.7761 | **0.7209** | 0.7912 |
 
 ![image](https://github.com/user-attachments/assets/b8a939fe-0e51-4d5c-93df-8c65fac29337)
