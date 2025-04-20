@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Upload, LineChart } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -75,6 +75,9 @@ export default function Home() {
   const [data, setData] = useState<ChurnData[]>([]);
   const [loading, setLoading] = useState(false);
   const [progress, setProgress] = useState(0);
+  const [churnFilter, setChurnFilter] = useState('All');
+  const [clusterFilter, setClusterFilter] = useState('All');
+  
 
   const handleFileUpload = async (
     event: React.ChangeEvent<HTMLInputElement>
@@ -167,6 +170,16 @@ export default function Home() {
     });
     return clusters;
   };
+
+  const filteredData = useMemo(() => {
+    return data.filter((row) => {
+      const churnMatch = churnFilter === 'All' || row.churnPrediction === churnFilter;
+      const clusterMatch =
+        clusterFilter === 'All' || String(row.clusterLabel) === clusterFilter;
+      return churnMatch && clusterMatch;
+    });
+  }, [data, churnFilter, clusterFilter]);
+  
 
   return (
     <div className="min-h-screen bg-background p-8">
@@ -284,40 +297,70 @@ export default function Home() {
               </div>
             </Card>
 
-            <Card className="overflow-hidden">
-              <div className="overflow-x-auto">
-                <UITable>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead className="whitespace-nowrap">CustomerID</TableHead>
-                      <TableHead className="whitespace-nowrap">Churn Prediction</TableHead>
-                      <TableHead className="whitespace-nowrap">Cluster Label</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {data.map((row, index) => (
-                      <TableRow key={index}>
-                        <TableCell className="whitespace-nowrap">
-                          {row.CustomerID}
-                        </TableCell>
-                        <TableCell
-                          className={`whitespace-nowrap ${
-                            row.churnPrediction === "Yes"
-                              ? "text-destructive font-medium"
-                              : "text-primary font-medium"
-                          }`}
-                        >
-                          {row.churnPrediction}
-                        </TableCell>
-                        <TableCell className="whitespace-nowrap">
-                          {row.clusterLabel}
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </UITable>
+            {/* <Card className="overflow-hidden"> */}
+            <div className="flex gap-4 items-center">
+              {/* Churn Filter */}
+              <div>
+                <label className="mr-2 font-medium">Churn:</label>
+                <select
+                  value={churnFilter}
+                  onChange={(e) => setChurnFilter(e.target.value)}
+                  className="border rounded px-2 py-1"
+                >
+                  <option value="All">All</option>
+                  <option value="Yes">Yes</option>
+                  <option value="No">No</option>
+                </select>
               </div>
-            </Card>
+
+              {/* Cluster Filter */}
+              <div>
+                <label className="mr-2 font-medium">Cluster:</label>
+                <select
+                  value={clusterFilter}
+                  onChange={(e) => setClusterFilter(e.target.value)}
+                  className="border rounded px-2 py-1"
+                >
+                  <option value="All">All</option>
+                  <option value="1">Cluster 1</option>
+                  <option value="2">Cluster 2</option>
+                  <option value="3">Cluster 3</option>
+                </select>
+              </div>
+            </div>
+
+            <Card className="overflow-hidden">
+        <div className="overflow-x-auto">
+          <UITable>
+            <TableHeader>
+              <TableRow>
+                <TableHead className="whitespace-nowrap">CustomerID</TableHead>
+                <TableHead className="whitespace-nowrap">Churn Prediction</TableHead>
+                <TableHead className="whitespace-nowrap">Cluster Label</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {filteredData.map((row, index) => (
+                <TableRow key={index}>
+                  <TableCell className="whitespace-nowrap">{row.CustomerID}</TableCell>
+                  <TableCell
+                    className={`whitespace-nowrap ${
+                      row.churnPrediction === 'Yes'
+                        ? 'text-destructive font-medium'
+                        : 'text-primary font-medium'
+                    }`}
+                  >
+                    {row.churnPrediction}
+                  </TableCell>
+                  <TableCell className="whitespace-nowrap">
+                    {row.clusterLabel}
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </UITable>
+        </div>
+      </Card>
           </>
         )}
       </div>
