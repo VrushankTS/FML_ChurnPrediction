@@ -1,6 +1,6 @@
 # Integrated Churn Prediction and Customer Segmentation Framework for Telco Business
 
-This repository contains implementation of the above research paper, which provides framework that integrates churn prediction and customer segmentation process to provide telco operators with a complete churn analysis to better manage customer churn.
+This repository contains implementation of a framework that integrates churn prediction and customer segmentation process to provide telco operators with a complete churn analysis to better manage customer churn.
 
 **Dataset**: https://www.kaggle.com/datasets/jpacse/datasets-for-churn-telecom
 
